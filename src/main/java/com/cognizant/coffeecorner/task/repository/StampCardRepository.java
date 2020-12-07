@@ -8,11 +8,7 @@ public class StampCardRepository {
 	private static Map<String, Integer> stampCardMap = new HashMap<>();
 
 	public void addToCard(String name) {
-		if (stampCardMap.containsKey(name)) {
-			stampCardMap.put(name, stampCardMap.get(name) + 1);
-		} else {
-			stampCardMap.put(name, 1);
-		}
+		stampCardMap.put(name, stampCardMap.get(name) + 1);
 	}
 
 	public void resetDiscount(String name) {
@@ -21,7 +17,14 @@ public class StampCardRepository {
 		}
 	}
 
-	public int getStampByCustomerName(String name) {
-		return stampCardMap.containsKey(name) ? stampCardMap.get(name) : 0;
+	public Integer getPointsByCardName(String cardId) {
+		return stampCardMap.get(cardId);
+	}
+
+	public String registerCustomer() {
+		int currentSize = stampCardMap.size();
+		String regName = "cc" + currentSize++;
+		stampCardMap.put(regName, 0);
+		return regName;
 	}
 }
