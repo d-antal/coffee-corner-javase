@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class PriceServiceTest {
 	private StampCardRepository stampCardRepository;
 	private Map<Double, Queue<Object>> savedCustomerChoices;
 	private final static String TEXT_INPUT = "abc";
+	private final static String ID_PREFIX = "cc";
 
 	@Before
 	public void init() {
@@ -100,10 +102,23 @@ public class PriceServiceTest {
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, TEXT_INPUT, 4, 4), 2.5);
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, TEXT_INPUT, 4), 2.5);
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, 4, TEXT_INPUT), 2.5);
-		
+
 		String testRegistrationId = priceService.registerCustomer();
 		for (Double expectedPrice : savedCustomerChoices.keySet()) {
 			priceService.getFinalPrice(testRegistrationId, savedCustomerChoices.get(expectedPrice), true);
 		}
+	}
+
+	@Test
+	public void testRegisterCustomer() {		
+		int registartions=5;		
+		for (int i = 0; i < registartions; i++) {
+			this.priceService.registerCustomer();			
+		}
+	
+		String expectedId=ID_PREFIX+registartions++;
+		String createdId = this.priceService.registerCustomer();
+		
+		assertTrue(expectedId.equals(createdId));
 	}
 }
