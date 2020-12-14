@@ -64,7 +64,7 @@ public class CoffeeCornerApplication {
 		StringBuilder header = new StringBuilder();
 		header = new StringBuilder();
 		header.append("===================================\n");
-		header.append("Please enter your registartion id :\n");
+		header.append("Please enter your registration id :\n");
 		header.append("===================================\n");
 		printMessage(header.toString());
 	}
