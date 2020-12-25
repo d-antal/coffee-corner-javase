@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.InputMismatchException;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +16,12 @@ import org.junit.Test;
 
 import com.cognizant.coffeecorner.task.exception.RegistrationNotFoundException;
 import com.cognizant.coffeecorner.task.repository.StampCardRepository;
-import com.cognizant.coffeecorner.task.service.PriceService;
-import com.cognizant.coffeecorner.task.service.PriceServiceImpl;
+import com.cognizant.coffeecorner.task.service.PayService;
+import com.cognizant.coffeecorner.task.service.PayServiceImpl;
 
-public class PriceServiceTest {
+public class PayServiceTest {
 
-	private PriceService priceService;
+	private PayService priceService;
 	private StampCardRepository stampCardRepository;
 	private Map<Double, Queue<Object>> savedCustomerChoices;
 	private final static String TEXT_INPUT = "abc";
@@ -32,7 +31,7 @@ public class PriceServiceTest {
 	public void init() {
 		this.savedCustomerChoices = new HashMap<Double, Queue<Object>>();
 		this.stampCardRepository = new StampCardRepository();
-		this.priceService = new PriceServiceImpl(stampCardRepository, new Scanner(System.in));
+		this.priceService = new PayServiceImpl(stampCardRepository, new Scanner(System.in));
 
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, 4, 4), 2.5);
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 2, 4, 4), 3.0);
@@ -70,7 +69,10 @@ public class PriceServiceTest {
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 3, 1, 4, 2, 4), 8.0);
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, 1, 4, 2, 3, 4), 10.95);
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, 4, 2, 3, 4), 10.95);
-
+		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, 1, 4, 1, 1, 1, 4, 4), 5.6);
+		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, 1, 4, 1, 1, 1, 4, 1, 1, 1, 4, 1, 1, 1, 4, 1, 1, 1, 4, 4), 11.2);
+		this.addTestParams(savedCustomerChoices, Arrays.asList(3, 3, 3, 3, 1, 1, 1, 4, 4), 15.8);
+		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, 1, 4, 1, 1, 1, 4, 1, 1, 1, 4, 1, 1, 1, 4, 3, 4), 11.2);
 	}
 
 	private void addTestParams(Map<Double, Queue<Object>> savedCustomerChoices, List<Object> steps, Double expectedPrice) {
@@ -80,10 +82,9 @@ public class PriceServiceTest {
 	}
 
 	@Test
-	public void testGetFinalPrice() {
-		String testRegistrationId = priceService.registerCustomer();
+	public void testGetFinalPrice() {	
 		for (Double expectedPrice : savedCustomerChoices.keySet()) {
-			Double price = priceService.getFinalPrice(testRegistrationId, savedCustomerChoices.get(expectedPrice), true);
+			Double price = priceService.calculatePrice(priceService.registerCustomer(), savedCustomerChoices.get(expectedPrice), true);
 			assertTrue(expectedPrice.equals(price));
 		}
 	}
@@ -91,7 +92,7 @@ public class PriceServiceTest {
 	@Test(expected = RegistrationNotFoundException.class)
 	public void testGetFinalPriceWhenRegistartionDoesNotExist() {
 		for (Double expectedPrice : savedCustomerChoices.keySet()) {
-			priceService.getFinalPrice("cc101", savedCustomerChoices.get(expectedPrice), true);
+			priceService.calculatePrice("cc101", savedCustomerChoices.get(expectedPrice), true);
 		}
 	}
 
@@ -105,20 +106,20 @@ public class PriceServiceTest {
 
 		String testRegistrationId = priceService.registerCustomer();
 		for (Double expectedPrice : savedCustomerChoices.keySet()) {
-			priceService.getFinalPrice(testRegistrationId, savedCustomerChoices.get(expectedPrice), true);
+			priceService.calculatePrice(testRegistrationId, savedCustomerChoices.get(expectedPrice), true);
 		}
 	}
 
 	@Test
-	public void testRegisterCustomer() {		
-		int registartions=5;		
+	public void testRegisterCustomer() {
+		int registartions = 5;
 		for (int i = 0; i < registartions; i++) {
-			this.priceService.registerCustomer();			
+			this.priceService.registerCustomer();
 		}
-	
-		String expectedId=ID_PREFIX+registartions++;
+
+		String expectedId = ID_PREFIX + registartions++;
 		String createdId = this.priceService.registerCustomer();
-		
+
 		assertTrue(expectedId.equals(createdId));
 	}
 }

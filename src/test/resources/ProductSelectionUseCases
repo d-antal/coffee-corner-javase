@@ -27,7 +27,7 @@
 25. Large coffee with 2x roasted     		1 3 3 3 4 4          		4.4 + max 1 roasted
 26. Bacon Roll                              2 4                         4.50
 27. Orange Juice 1x                         3 4                         3.95
-28. Orange Juice 5x discount                3 3 3 3 3 4                 15.8 + free juice message
+28. Orange Juice 5x discount                3 3 3 3 3 4                 15.8 + free beverage message
 29. Small coffee no extra + bacon           1 1 4 2 4                   7.0 
 30. Small coffee with extra + bacon         1 1 1 4 2 4                 7.0 + free extra message
 31. Medium coffee no extra + bacon          1 2 4 2 4                   7.5 
@@ -41,3 +41,8 @@
 38. Small coffee - wrong input   			1 test 4 4                	InputMismatchException
 39. Small coffee - wrong input    			1 1 test 4                  InputMismatchException
 40. Small coffee - wrong input     			1 1 4 test                 	InputMismatchException
+
+41.Two coffees + extra                      1 1 1 4 1 1 1 4 4           5.6 + Coffee order is finished message 2x
+42.Five coffees + extra                     5x(1 1 1 4) 4               11.2 + 1 Free beverage message (last coffee is free)
+43.Four Juices + 1 coffee                   3 3 3 3 1 1 1 4 4           15.8 + 1 Free beverage message (coffee is free)
+42.Four coffees + 1 juice                   3x(1 1 1 4) 3 4             11.2 + 1 Free beverage message (juice is free)
