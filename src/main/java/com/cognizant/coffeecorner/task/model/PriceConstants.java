@@ -15,7 +15,7 @@ public class PriceConstants {
 	public static final String CUSTOMER = "Registered customer ID:  ";
 	public static final String SELECT_MAX_4_MESSAGE = "Please Select between 1-4";
 	public static final String SELECT_MAX_3_MESSAGE = "Please Select between 1-3";
-	public static final String WRONG_INPUT_MESSAGE = "Please try again! Wrong input: ";
+	public static final String WRONG_INPUT_MESSAGE = "Please try again! Wrong input ";
 	public static final String BEVERAGES_DISCOUNT = "You have collected 5 beverages, the last one is free!";
 	public static final String DISCOUT_MESSAGE_FREE_EXTRA = "You have ordered a beverage with extra(s) and a snack. One extra is free!";
 	public static final String REGISTRATION_NOT_FOUND = "This registartion ID does not exist. Please try again or register";

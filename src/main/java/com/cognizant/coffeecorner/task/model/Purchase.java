@@ -2,23 +2,13 @@ package com.cognizant.coffeecorner.task.model;
 
 public class Purchase {
 
-	private Double finalPrice;
-	private Double lastExtraSelected;
+	private double finalPrice;
+	private double lastExtraSelected;
 	private boolean beverageSelected;
 	private boolean snackSelected;
 	private boolean milkSelected;
 	private boolean roastedSelected;
 	private boolean beverageDiscount;
-
-	public Purchase(Double finalPrice, Double lastExtraSelected, boolean beverageSelected, boolean snackSelected, boolean milkSelected, boolean roastedSelected, boolean beverageDiscount ) {
-		this.finalPrice = finalPrice;
-		this.lastExtraSelected = lastExtraSelected;
-		this.beverageSelected = beverageSelected;
-		this.snackSelected = snackSelected;
-		this.milkSelected = milkSelected;
-		this.roastedSelected = roastedSelected;
-		this.beverageDiscount= beverageDiscount;
-	}
 
 	public Double getFinalPrice() {
 		return Math.floor(finalPrice * 100) / 100;
@@ -74,6 +64,5 @@ public class Purchase {
 
 	public void setBeverageDiscount(boolean beverageDiscount) {
 		this.beverageDiscount = beverageDiscount;
-	}		
+	}
 }
-

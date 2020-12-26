@@ -82,31 +82,32 @@ public class PayServiceTest {
 	}
 
 	@Test
-	public void testGetFinalPrice() {	
+	public void testGetFinalPrice() throws Exception {
 		for (Double expectedPrice : savedCustomerChoices.keySet()) {
-			Double price = priceService.calculatePrice(priceService.registerCustomer(), savedCustomerChoices.get(expectedPrice), true);
+			Double price = priceService.purchase(this.stampCardRepository.registerCustomer(), savedCustomerChoices.get(expectedPrice), true);
+
 			assertTrue(expectedPrice.equals(price));
 		}
 	}
 
 	@Test(expected = RegistrationNotFoundException.class)
-	public void testGetFinalPriceWhenRegistartionDoesNotExist() {
+	public void testGetFinalPriceWhenRegistartionDoesNotExist() throws Exception {
 		for (Double expectedPrice : savedCustomerChoices.keySet()) {
-			priceService.calculatePrice("cc101", savedCustomerChoices.get(expectedPrice), true);
+			priceService.purchase("cc101", savedCustomerChoices.get(expectedPrice), true);
 		}
 	}
 
 	@Test(expected = InputMismatchException.class)
-	public void testGetFinalPriceWhenWrongInput() {
+	public void testGetFinalPriceWhenWrongInput() throws Exception {
 		this.savedCustomerChoices = new HashMap<Double, Queue<Object>>();
 		this.addTestParams(savedCustomerChoices, Arrays.asList(TEXT_INPUT, 1, 4, 4), 2.5);
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, TEXT_INPUT, 4, 4), 2.5);
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, TEXT_INPUT, 4), 2.5);
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, 4, TEXT_INPUT), 2.5);
 
-		String testRegistrationId = priceService.registerCustomer();
+		String testRegistrationId = this.stampCardRepository.registerCustomer();
 		for (Double expectedPrice : savedCustomerChoices.keySet()) {
-			priceService.calculatePrice(testRegistrationId, savedCustomerChoices.get(expectedPrice), true);
+			priceService.purchase(testRegistrationId, savedCustomerChoices.get(expectedPrice), true);
 		}
 	}
 
@@ -114,11 +115,11 @@ public class PayServiceTest {
 	public void testRegisterCustomer() {
 		int registartions = 5;
 		for (int i = 0; i < registartions; i++) {
-			this.priceService.registerCustomer();
+			this.stampCardRepository.registerCustomer();
 		}
 
 		String expectedId = ID_PREFIX + registartions++;
-		String createdId = this.priceService.registerCustomer();
+		String createdId = this.stampCardRepository.registerCustomer();
 
 		assertTrue(expectedId.equals(createdId));
 	}

@@ -1,7 +1,8 @@
    Coffee Corner Java SE app description
    --------------------------------------
+   Please find the use cases (saved choices) in the ProductSelectionUseCases file to see the required steps and the expected results.
    
-   Customers can register and collect points for discount. The fifth orange juice is free. Points can be collected in one or more transactions.
+   Customers can register and collect points for discount. The fifth beverage is free. Points can be collected in one or more transactions.
    The customers need to choose between 1. "Registered customer" and 2. "New customer" options when the Coffee Corner app starts. In case of a 
    new customer the app creates a new customer ID when the customer pays. This Registered customer ID is saved and needs to be used later in order
    to collect points for the discount and/or to login as a "Registered customer".
@@ -11,10 +12,10 @@
    
    It is possible to buy Coffees, Bacon rolls and Orange juices. In case of Coffee (1.) the Customer needs to choose coffee type (Small, Medium, Large).
    If the entered number is not between 1-3: "Please Select between 1-3", the customer can continue and choose again between 1-3.
-   In case of a wrong input the error message is: "Please try again! Wrong input: input", the selection is cancelled, the customer is redirected to the 
+   In case of a wrong input: error message- "Please try again! Wrong input: input", the selection is cancelled, the customer is redirected to the 
    main menu to select again (the previous selections are not cancelled).
    
-   When the coffee type is selected, the Customer can select extra or Finish (4) and select other products/pay. 
+   If the coffee type is selected, the Customer can add extra or Finish (4) and select other products/pay. 
    It is possible to select 1 Extra milk/foamed milk and 1 extra Extra special roast for the coffee. If both are selected then the customer is 
    redirected to the main menu. It is not possible to choose two milks. If 1 milk has already been added (extra milk or foamed milk) then it is not 
    possible to choose 1 more milk (it does not matter if it is foamed or not): "You can add only one extra milk to the coffee" and it is not possible 
@@ -24,14 +25,13 @@
    If an extra (in case of two then the last one) is selected for the coffee and the Customer buys a bacon roll in the same transaction then the
    extra is free: "You have ordered a beverage with extra(s) and a snack. One extra is free!"
   
-   If the customer buys 5 juices (in one or more transactions ), the fifth juice is free : "You have collected 5 juices, this one is free!"
+   If the customer buys 5 beverages (in one or more transactions ), the fifth beverage is free : "You have collected 5 beverages, the last one is free!"
    The Customer can buy 1 or more of the products and Pay (4) : "Registered customer ID:  ...  Final price :  ...CHF"
    After Pay (4) it is possible to start a new transaction or Exit (5) - login page.
    
    Saved choices (selected products/steps)-> the application calculates the final price based on the inputs from the saved choices Queue 
    (currently it is used only in tests. UI+service is not implemented yet for this option)
-   Please find the use cases (saved choices) in the ProductSelectionUseCases file to see the required steps and the expected results.
-    
+      
    Main steps
    ----------
    
@@ -118,7 +118,7 @@
 		  - press 2 then pay or select more products
 		
 		b. Orange Juice
-		 -  press 3 then pay or select more products (collect 5 juices for the discount)
+		 -  press 3 then pay or select more products (collect 5 beverages for the discount)
 				
 	 IV.Pay
 		It is possible to choose and pay more products in the same transaction 

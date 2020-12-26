@@ -6,23 +6,20 @@ import java.util.Queue;
 import com.cognizant.coffeecorner.task.exception.RegistrationNotFoundException;
 
 public interface PayService {
-
+	
 	/**
-	 * @param registartionId       the entered registrationId
+	 * Calculates the price based on the selected product(s):
+	 * 1. Input (manual selection) 
+	 *     Registers a new customer or validates and uses a valid registration for the stamp card discounts
+	 * 2. Saved customer choices (automatic)
+	 *     Calculates the final price based on the saved input (savedCustomerChoices queue)
+	 * @param registrationId  registrationId
 	 * @param savedCustomerChoices savedChoices (products)
-	 * @param useSavedChoices      if true, savedCustomerChoices is used to
-	 *                             calculate price
-	 * @return calculated price
-	 * @throws RegistrationNotFoundException if the entered registrationId does not
-	 *                                       exist
-	 * @throws InputMismatchException        if not number is pressed
+	 * @param useSavedChoices  if true, savedCustomerChoices is used to calculate price
+	 * @return calculated price/purchase
+	 * @throws RegistrationNotFoundException registrationId does not exist
+	 * @throws InputMismatchException  wrong input
+	 * @throws Exception 
 	 */
-	Double calculatePrice(String registartionId, Queue<Object> savedCustomerChoices, boolean useSavedChoices) throws RegistrationNotFoundException, InputMismatchException;
-
-	/**
-	 * @return creates a new registrationId
-	 */
-	String registerCustomer();
-
-	Double payPurchase() throws Exception;
+	Double purchase(String registrationId, Queue<Object> savedCustomerChoices, boolean useSavedChoices) throws RegistrationNotFoundException, InputMismatchException, Exception;;
 }

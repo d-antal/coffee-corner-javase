@@ -29,23 +29,17 @@ public class PayServiceImpl implements PayService {
 		return savedCustomerChoices == null ? scanner.nextInt() : (int) savedCustomerChoices.poll();
 	}
 
-	public String registerCustomer() {
-		return stampCardRepository.registerCustomer();
-	}
-
-	private Integer validateRegistration(String regName) throws RegistrationNotFoundException {
-		if (stampCardRepository.getPointsByCardName(regName) == null) {
+	private Integer validateRegistration(String regId) throws RegistrationNotFoundException {
+		if (stampCardRepository.getPointsByCardName(regId) == null) {
 			throw new RegistrationNotFoundException(PriceConstants.REGISTRATION_NOT_FOUND);
 		}
-		return stampCardRepository.getPointsByCardName(regName);
-
+		return stampCardRepository.getPointsByCardName(regId);
 	}
 
-	@Override
-	public Double calculatePrice(String regName, Queue<Object> savedCustomerChoices, boolean useSaveChoices) throws RegistrationNotFoundException, InputMismatchException {
+	private Double calculatePrice(String regId, Queue<Object> savedCustomerChoices, boolean useSaveChoices) throws RegistrationNotFoundException, InputMismatchException {
 		int productSelected = 0;
-		validateRegistration(regName);
-		Purchase purchase = new Purchase(0.0, 0.0, false, false, false, false, false);
+		validateRegistration(regId);
+		Purchase purchase = new Purchase();
 		while (productSelected != 4) {
 			try {
 				createHeader(PriceConstants.PRODUCT, Offering.DEFAULT_COFFEE, Offering.BACON_ROLL, Offering.ORANGE_JUICE);
@@ -62,18 +56,18 @@ public class PayServiceImpl implements PayService {
 					printMessage(PriceConstants.SELECT_MAX_4_MESSAGE);
 					continue;
 				}
-				purchase = productSelected == 1 ? addCoffeeToPurchase(savedCustomerChoices, purchase, regName)
-						 : productSelected == 2 ? addToPurchase(purchase, 2, regName) : addToPurchase(purchase, 3, regName);
+				purchase = productSelected == 1 ? addCoffeeToPurchase(savedCustomerChoices, purchase, regId)
+						: productSelected == 2 ? addToPurchase(purchase, 2, regId) : addToPurchase(purchase, 3, regId);
 			} catch (InputMismatchException e) {
 				if (savedCustomerChoices != null && useSaveChoices) {
-					throw new InputMismatchException();
+					throw e;
 				}
 				String wrongInput = scanner.next();
 				printMessage(PriceConstants.WRONG_INPUT_MESSAGE + wrongInput);
 				continue;
 			}
 		}
-		handleDiscounts(purchase, regName);
+		handleDiscounts(purchase, regId);
 		return purchase.getFinalPrice();
 	}
 
@@ -95,8 +89,7 @@ public class PayServiceImpl implements PayService {
 		while (productSelected < 1 || productSelected > 3) {
 			productSelected = selectProduct(savedCustomerChoices);
 			Double selectedPrice = productSelected == 1 ? Offering.COFFEE_SMALL.getPrice()
-					             : productSelected == 2 ? Offering.COFFEE_MEDIUM.getPrice() 
-					             : productSelected == 3 ? Offering.COFFEE_LARGE.getPrice() : 0;
+					: productSelected == 2 ? Offering.COFFEE_MEDIUM.getPrice() : productSelected == 3 ? Offering.COFFEE_LARGE.getPrice() : 0;
 			if (productSelected > 0) {
 				stampCardRepository.addToCard(regName);
 				freeCoffee = freeDrinkDiscount(regName, purchase);
@@ -130,9 +123,10 @@ public class PayServiceImpl implements PayService {
 			createHeader(PriceConstants.EXTRA, Offering.EXTRA_MILK, Offering.FOAMED_MILK, Offering.SPECIAL_ROAST_COFFEE);
 			extraSelected = selectProduct(savedCustomerChoices);
 			printMessage(extraSelected == 1 ? addExtraPrice(purchase, PriceConstants.MILK, Offering.EXTRA_MILK.getPrice(), PriceConstants.MILK_ALREADY_SELECTED, freeCoffee)
-					   : extraSelected == 2 ? addExtraPrice(purchase, PriceConstants.MILK, Offering.FOAMED_MILK.getPrice(), PriceConstants.MILK_ALREADY_SELECTED, freeCoffee)
-					   : extraSelected == 3	? addExtraPrice(purchase, PriceConstants.ROASTED, Offering.SPECIAL_ROAST_COFFEE.getPrice(), PriceConstants.ROAST_ALREADY_SELECTED, freeCoffee)
-					   : extraSelected == 4 ? PriceConstants.COFFEE_ORDER_FINISHED : PriceConstants.SELECT_MAX_4_MESSAGE);
+					: extraSelected == 2 ? addExtraPrice(purchase, PriceConstants.MILK, Offering.FOAMED_MILK.getPrice(), PriceConstants.MILK_ALREADY_SELECTED, freeCoffee)
+							: extraSelected == 3
+									? addExtraPrice(purchase, PriceConstants.ROASTED, Offering.SPECIAL_ROAST_COFFEE.getPrice(), PriceConstants.ROAST_ALREADY_SELECTED, freeCoffee)
+									: extraSelected == 4 ? PriceConstants.COFFEE_ORDER_FINISHED : PriceConstants.SELECT_MAX_4_MESSAGE);
 		}
 		purchase.setMilkSelected(false);
 		purchase.setRoastedSelected(false);
@@ -163,44 +157,31 @@ public class PayServiceImpl implements PayService {
 		}
 		return false;
 	}
-	
-	public Double payPurchase () throws Exception {		
+
+	@Override
+	public Double purchase(String registrationName, Queue<Object> savedCustomerChoices, boolean useSavedChoices)
+			throws Exception, RegistrationNotFoundException, InputMismatchException {
 		double finalPrice = -1;
-		String registrationName = null;
-		boolean stopApp = false;
-		while (!stopApp) {
-			try {
-				if (finalPrice == -1) {
-					registrationHeader();
-					int selected = scanner.nextInt();
-					if (selected != 1 && selected != 2) {
-						printMessage(PriceConstants.WRONG_NUMBER_SELECTED);
-						continue;
-					}
-					if (selected == 1) {
-						registeredCustomerHeader();
-						registrationName = new Scanner(System.in).nextLine();
-					} else {
-						registrationName = registerCustomer();
-					}
+		boolean finishPurchase = false;
+		while (!finishPurchase) {
+			if (finalPrice == -1) {
+				registrationHeader();
+				int selected = useSavedChoices ? 1 : scanner.nextInt();
+				if (selected != 1 && selected != 2) {
+					printMessage(PriceConstants.WRONG_NUMBER_SELECTED);
+					continue;
 				}
-				finalPrice = calculatePrice(registrationName, null, false);
-
-			} catch (RegistrationNotFoundException e) {
-				printMessage(e.getMessage());
-				finalPrice = -1;		
-			} catch (InputMismatchException e) {
-				String wrongInput = scanner.nextLine();
-				printMessage(PriceConstants.WRONG_INPUT_MESSAGE + wrongInput);
-				finalPrice = -1;				
-			} catch (Exception e) {
-				printMessage(PriceConstants.SERVER_ERROR_MESSAGE);
-				throw new Exception(PriceConstants.SERVER_ERROR_MESSAGE + e);
+				if (selected == 1) {
+					registeredCustomerHeader();
+					registrationName = useSavedChoices ? registrationName : new Scanner(System.in).nextLine();
+				} else {
+					registrationName = stampCardRepository.registerCustomer();
+				}
 			}
+			finalPrice = calculatePrice(registrationName, savedCustomerChoices, useSavedChoices);
+			finishPurchase = true;
 		}
-
 		return finalPrice;
-
 	}
 
 	private void registeredCustomerHeader() {
@@ -222,7 +203,7 @@ public class PayServiceImpl implements PayService {
 		header.append("============================\n");
 		printMessage(header.toString());
 	}
-	
+
 	private void createHeader(String selected, Offering firstProduct, Offering secondProduct, Offering thirdProduct) {
 		StringBuilder header = new StringBuilder();
 		String line = ("============================\n");
@@ -251,5 +232,4 @@ public class PayServiceImpl implements PayService {
 	private void printMessage(String message) {
 		System.out.println(message);
 	}
-
 }
