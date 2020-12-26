@@ -57,7 +57,7 @@ public class PayServiceImpl implements PayService {
 					continue;
 				}
 				purchase = productSelected == 1 ? addCoffeeToPurchase(savedCustomerChoices, purchase, regId)
-						: productSelected == 2 ? addToPurchase(purchase, 2, regId) : addToPurchase(purchase, 3, regId);
+						 : productSelected == 2 ? addToPurchase(purchase, 2, regId) : addToPurchase(purchase, 3, regId);
 			} catch (InputMismatchException e) {
 				if (savedCustomerChoices != null && useSaveChoices) {
 					throw e;
@@ -89,7 +89,8 @@ public class PayServiceImpl implements PayService {
 		while (productSelected < 1 || productSelected > 3) {
 			productSelected = selectProduct(savedCustomerChoices);
 			Double selectedPrice = productSelected == 1 ? Offering.COFFEE_SMALL.getPrice()
-					: productSelected == 2 ? Offering.COFFEE_MEDIUM.getPrice() : productSelected == 3 ? Offering.COFFEE_LARGE.getPrice() : 0;
+								 : productSelected == 2 ? Offering.COFFEE_MEDIUM.getPrice() 
+								 : productSelected == 3 ? Offering.COFFEE_LARGE.getPrice() : 0;
 			if (productSelected > 0) {
 				stampCardRepository.addToCard(regName);
 				freeCoffee = freeDrinkDiscount(regName, purchase);
@@ -123,10 +124,9 @@ public class PayServiceImpl implements PayService {
 			createHeader(PriceConstants.EXTRA, Offering.EXTRA_MILK, Offering.FOAMED_MILK, Offering.SPECIAL_ROAST_COFFEE);
 			extraSelected = selectProduct(savedCustomerChoices);
 			printMessage(extraSelected == 1 ? addExtraPrice(purchase, PriceConstants.MILK, Offering.EXTRA_MILK.getPrice(), PriceConstants.MILK_ALREADY_SELECTED, freeCoffee)
-					: extraSelected == 2 ? addExtraPrice(purchase, PriceConstants.MILK, Offering.FOAMED_MILK.getPrice(), PriceConstants.MILK_ALREADY_SELECTED, freeCoffee)
-							: extraSelected == 3
-									? addExtraPrice(purchase, PriceConstants.ROASTED, Offering.SPECIAL_ROAST_COFFEE.getPrice(), PriceConstants.ROAST_ALREADY_SELECTED, freeCoffee)
-									: extraSelected == 4 ? PriceConstants.COFFEE_ORDER_FINISHED : PriceConstants.SELECT_MAX_4_MESSAGE);
+					   : extraSelected == 2 ? addExtraPrice(purchase, PriceConstants.MILK, Offering.FOAMED_MILK.getPrice(), PriceConstants.MILK_ALREADY_SELECTED, freeCoffee)
+					   : extraSelected == 3	? addExtraPrice(purchase, PriceConstants.ROASTED, Offering.SPECIAL_ROAST_COFFEE.getPrice(), PriceConstants.ROAST_ALREADY_SELECTED, freeCoffee)
+					   : extraSelected == 4 ? PriceConstants.COFFEE_ORDER_FINISHED : PriceConstants.SELECT_MAX_4_MESSAGE);
 		}
 		purchase.setMilkSelected(false);
 		purchase.setRoastedSelected(false);
