@@ -8,6 +8,7 @@ import com.cognizant.coffeecorner.task.model.PriceConstants;
 import com.cognizant.coffeecorner.task.repository.StampCardRepository;
 import com.cognizant.coffeecorner.task.service.PayService;
 import com.cognizant.coffeecorner.task.service.PayServiceImpl;
+import com.cognizant.coffeecorner.task.service.StampCardServiceImpl;
 
 public class CoffeeCornerApplication {
 
@@ -29,7 +30,8 @@ public class CoffeeCornerApplication {
 	 */
 	private static void purchaseDemo() {
 		Scanner scanner = new Scanner(System.in);
-		CoffeeCornerApplication application = new CoffeeCornerApplication(new PayServiceImpl(new StampCardRepository(), scanner));
+	
+		CoffeeCornerApplication application = new CoffeeCornerApplication(new PayServiceImpl(new StampCardServiceImpl(new StampCardRepository()), scanner));
 
 		boolean stopApp = false;
 		while (!stopApp) {

@@ -10,15 +10,14 @@ import com.cognizant.coffeecorner.task.exception.RegistrationNotFoundException;
 import com.cognizant.coffeecorner.task.model.Offering;
 import com.cognizant.coffeecorner.task.model.PriceConstants;
 import com.cognizant.coffeecorner.task.model.Purchase;
-import com.cognizant.coffeecorner.task.repository.StampCardRepository;
 
 public class PayServiceImpl implements PayService {
 
-	private StampCardRepository stampCardRepository;
+	private StampCardService stampCardService;
 	private Scanner scanner;
 
-	public PayServiceImpl(StampCardRepository stampCardRepository, Scanner scanner) {
-		this.stampCardRepository = stampCardRepository;
+	public PayServiceImpl(StampCardService stampCardService, Scanner scanner) {
+		this.stampCardService = stampCardService;
 		this.scanner = scanner;
 	}
 
@@ -30,10 +29,10 @@ public class PayServiceImpl implements PayService {
 	}
 
 	private Integer validateRegistration(String regId) throws RegistrationNotFoundException {
-		if (stampCardRepository.getPointsByCardId(regId) == null) {
+		if (stampCardService.getPointsByCardId(regId) == null) {
 			throw new RegistrationNotFoundException(PriceConstants.REGISTRATION_NOT_FOUND);
 		}
-		return stampCardRepository.getPointsByCardId(regId);
+		return stampCardService.getPointsByCardId(regId);
 	}
 
 	private Double calculatePrice(String regId, Queue<Object> savedCustomerChoices, boolean useSaveChoices) throws RegistrationNotFoundException, InputMismatchException {
@@ -92,7 +91,7 @@ public class PayServiceImpl implements PayService {
 								: productSelected == 2 ? Offering.COFFEE_MEDIUM.getPrice() 
 								: productSelected == 3 ? Offering.COFFEE_LARGE.getPrice() : 0;
 			if (productSelected > 0) {
-				stampCardRepository.addToCard(regName);
+				stampCardService.addToCard(regName);
 				freeCoffee = freeDrinkDiscount(regName, purchase);
 				if (!freeCoffee) {
 					purchase.setFinalPrice(purchase.getFinalPrice() + selectedPrice);
@@ -110,7 +109,7 @@ public class PayServiceImpl implements PayService {
 			purchase.setFinalPrice(purchase.getFinalPrice() + Offering.BACON_ROLL.getPrice());
 		} else {
 			purchase.setBeverageSelected(true);
-			stampCardRepository.addToCard(regName);
+			stampCardService.addToCard(regName);
 			if (!freeDrinkDiscount(regName, purchase)) {
 				purchase.setFinalPrice(purchase.getFinalPrice() + Offering.ORANGE_JUICE.getPrice());
 			}
@@ -150,8 +149,8 @@ public class PayServiceImpl implements PayService {
 	}
 
 	private boolean freeDrinkDiscount(String name, Purchase purchase) {
-		if (stampCardRepository.getPointsByCardId(name) == 5) {
-			stampCardRepository.resetDiscount(name);
+		if (stampCardService.getPointsByCardId(name) == 5) {
+			stampCardService.resetDiscount(name);
 			purchase.setBeverageDiscount(true);
 			return true;
 		}
@@ -175,7 +174,7 @@ public class PayServiceImpl implements PayService {
 					registeredCustomerHeader();
 					registrationName = useSavedChoices ? registrationName : new Scanner(System.in).nextLine();
 				} else {
-					registrationName = stampCardRepository.registerCustomer();
+					registrationName = stampCardService.saveNewId();
 				}
 			}
 			finalPrice = calculatePrice(registrationName, savedCustomerChoices, useSavedChoices);

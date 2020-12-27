@@ -18,11 +18,13 @@ import com.cognizant.coffeecorner.task.exception.RegistrationNotFoundException;
 import com.cognizant.coffeecorner.task.repository.StampCardRepository;
 import com.cognizant.coffeecorner.task.service.PayService;
 import com.cognizant.coffeecorner.task.service.PayServiceImpl;
+import com.cognizant.coffeecorner.task.service.StampCardService;
+import com.cognizant.coffeecorner.task.service.StampCardServiceImpl;
 
 public class PayServiceTest {
 
 	private PayService priceService;
-	private StampCardRepository stampCardRepository;
+	private StampCardService stampCardService;
 	private Map<Double, Queue<Object>> savedCustomerChoices;
 	private final static String TEXT_INPUT = "abc";
 	private final static String ID_PREFIX = "cc";
@@ -30,8 +32,8 @@ public class PayServiceTest {
 	@Before
 	public void init() {
 		this.savedCustomerChoices = new HashMap<Double, Queue<Object>>();
-		this.stampCardRepository = new StampCardRepository();
-		this.priceService = new PayServiceImpl(stampCardRepository, new Scanner(System.in));
+		this.stampCardService = new StampCardServiceImpl(new StampCardRepository());
+		this.priceService = new PayServiceImpl(this.stampCardService, new Scanner(System.in));
 
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, 4, 4), 2.5);
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 2, 4, 4), 3.0);
@@ -84,7 +86,7 @@ public class PayServiceTest {
 	@Test
 	public void testPurchase() throws Exception {
 		for (Double expectedPrice : savedCustomerChoices.keySet()) {
-			Double price = priceService.purchase(this.stampCardRepository.registerCustomer(), savedCustomerChoices.get(expectedPrice), true);
+			Double price = priceService.purchase(this.stampCardService.saveNewId(), savedCustomerChoices.get(expectedPrice), true);
 
 			assertTrue(expectedPrice.equals(price));
 		}
@@ -105,22 +107,10 @@ public class PayServiceTest {
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, TEXT_INPUT, 4), 2.5);
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, 1, 4, TEXT_INPUT), 2.5);
 
-		String testRegistrationId = this.stampCardRepository.registerCustomer();
+		String testRegistrationId = this.stampCardService.saveNewId();
 		for (Double expectedPrice : savedCustomerChoices.keySet()) {
 			priceService.purchase(testRegistrationId, savedCustomerChoices.get(expectedPrice), true);
 		}
 	}
-
-	@Test
-	public void testRegisterCustomer() {
-		int registartions = 5;
-		for (int i = 0; i < registartions; i++) {
-			this.stampCardRepository.registerCustomer();
-		}
-
-		String expectedId = ID_PREFIX + registartions++;
-		String createdId = this.stampCardRepository.registerCustomer();
-
-		assertTrue(expectedId.equals(createdId));
-	}
 }
+

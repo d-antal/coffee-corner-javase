@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class StampCardRepository {
 
-	private static Map<String, Integer> stampCardMap = new HashMap<>();
+	private Map<String, Integer> stampCardMap = new HashMap<>();
 
 	public void addToCard(String name) {
 		stampCardMap.put(name, stampCardMap.get(name) + 1);
@@ -17,7 +17,7 @@ public class StampCardRepository {
 		}
 	}
 
-	public Integer getPointsByCardId(String cardId) {
+	public Integer getPointsByCardName(String cardId) {
 		return stampCardMap.get(cardId);
 	}
 
