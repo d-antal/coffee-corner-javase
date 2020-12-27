@@ -17,7 +17,7 @@ public class StampCardRepository {
 		}
 	}
 
-	public Integer getPointsByCardName(String cardId) {
+	public Integer getPointsByCardId(String cardId) {
 		return stampCardMap.get(cardId);
 	}
 

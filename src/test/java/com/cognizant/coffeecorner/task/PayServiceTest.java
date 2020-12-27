@@ -82,7 +82,7 @@ public class PayServiceTest {
 	}
 
 	@Test
-	public void testGetFinalPrice() throws Exception {
+	public void testPurchase() throws Exception {
 		for (Double expectedPrice : savedCustomerChoices.keySet()) {
 			Double price = priceService.purchase(this.stampCardRepository.registerCustomer(), savedCustomerChoices.get(expectedPrice), true);
 
@@ -91,14 +91,14 @@ public class PayServiceTest {
 	}
 
 	@Test(expected = RegistrationNotFoundException.class)
-	public void testGetFinalPriceWhenRegistartionDoesNotExist() throws Exception {
+	public void testPurchaseWhenRegistartionDoesNotExist() throws Exception {
 		for (Double expectedPrice : savedCustomerChoices.keySet()) {
 			priceService.purchase("cc101", savedCustomerChoices.get(expectedPrice), true);
 		}
 	}
 
 	@Test(expected = InputMismatchException.class)
-	public void testGetFinalPriceWhenWrongInput() throws Exception {
+	public void testPurchaseWhenInputIsWrong() throws Exception {
 		this.savedCustomerChoices = new HashMap<Double, Queue<Object>>();
 		this.addTestParams(savedCustomerChoices, Arrays.asList(TEXT_INPUT, 1, 4, 4), 2.5);
 		this.addTestParams(savedCustomerChoices, Arrays.asList(1, TEXT_INPUT, 4, 4), 2.5);
